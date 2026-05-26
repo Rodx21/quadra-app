@@ -54,7 +54,7 @@ export default function CalendarPage() {
 
   useEffect(() => {
     setLoading(true)
-    fetch(`/api/calendario?semana=${week}`)
+    fetch(`/api/calendar?semana=${week}`)
       .then(r => r.json())
       .then(data => {
         setTecnicos(data.tecnicos ?? [])
