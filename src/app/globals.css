@@ -373,3 +373,76 @@ body {
 .badge-vacant { background: #f0f2f7; color: var(--gray); }
 .badge-lost   { background: var(--red-bg); color: var(--red-text); }
 .cal-none { color: var(--gray); font-size: 11px; text-align: center; padding: 24px 0; }
+
+/* ════════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════════ */
+
+/* Calendar: horizontal scroll, ~2.4 days visible on mobile */
+@media (max-width: 700px) {
+  .cal-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 4px;
+  }
+  .cal { grid-template-columns: repeat(7, 40vw); gap: 6px; }
+  .cal-col { scroll-snap-align: start; }
+  .cal-dh { display: block; padding: 10px 10px 8px; text-align: center; }
+  .cal-ddate { font-size: 18px; }
+  .cal-dname { margin-bottom: 3px; }
+  .cal-dmonth { margin-top: 2px; }
+  .cal-body { padding: 6px 5px; gap: 5px; }
+  .cal-block { padding: 7px 8px 6px; }
+  .cal-btime { font-size: 10px; }
+  .cal-cname { font-size: 11px; }
+  .cal-cs { font-size: 9px; padding: 2px 4px; }
+}
+
+/* Admin: sidebar → top nav on mobile */
+@media (max-width: 768px) {
+  .admin-layout { grid-template-columns: 1fr; }
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: auto;
+    z-index: 20;
+    overflow: visible;
+  }
+  .sl { padding: 14px 16px; }
+  .sw { padding: 10px 16px; }
+  .sf { display: none; }
+
+  .snav {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 4px 8px 8px;
+    gap: 2px;
+    border-top: 1px solid rgba(255,255,255,.1);
+  }
+  .snav::-webkit-scrollbar { display: none; }
+  .nlabel { display: none; }
+  .ni { flex-direction: column; gap: 3px; padding: 8px 12px; font-size: 9px; white-space: nowrap; flex-shrink: 0; width: auto; }
+  .ni .ic { font-size: 18px; width: auto; }
+  .ni-acc { display: none; }
+  .coach-sub { display: none; }
+
+  .main-area { min-height: 0; }
+  .topbar { height: auto; min-height: 56px; padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+  .ta { gap: 6px; }
+  .btn { padding: 7px 12px; font-size: 12px; }
+  .content { padding: 16px 14px; }
+
+  .stats-row { grid-template-columns: repeat(2, 1fr) !important; }
+
+  .thead { display: none !important; }
+  .tr { display: flex !important; flex-direction: column; gap: 4px; padding: 14px 16px; }
+  .td { padding: 0; }
+
+  .send-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+}
