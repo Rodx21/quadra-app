@@ -20,24 +20,40 @@ export async function POST(req: NextRequest) {
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
-  const expiresAt = new Date()
-  expiresAt.setDate(expiresAt.getDate() + 7)
 
   const results = []
 
   for (const tecnico of tecnicos) {
-    const { data: tokenData, error: tokenError } = await supabaseAdmin
+    // Reuse existing active token if one exists
+    const { data: existing } = await supabaseAdmin
       .from('tokens_acesso')
-      .insert({ tecnico_id: tecnico.id, expires_at: expiresAt.toISOString() })
       .select('token')
+      .eq('tecnico_id', tecnico.id)
+      .gt('expires_at', new Date().toISOString())
+      .order('expires_at', { ascending: false })
+      .limit(1)
       .single()
 
-    if (tokenError || !tokenData) {
-      results.push({ tecnico_id: tecnico.id, nome: tecnico.nome, error: 'Failed to generate token' })
-      continue
+    let tokenValue: string
+    if (existing) {
+      tokenValue = existing.token
+    } else {
+      const expiresAt = new Date()
+      expiresAt.setFullYear(expiresAt.getFullYear() + 10)
+      const { data: tokenData, error: tokenError } = await supabaseAdmin
+        .from('tokens_acesso')
+        .insert({ tecnico_id: tecnico.id, expires_at: expiresAt.toISOString() })
+        .select('token')
+        .single()
+
+      if (tokenError || !tokenData) {
+        results.push({ tecnico_id: tecnico.id, nome: tecnico.nome, error: 'Failed to generate token' })
+        continue
+      }
+      tokenValue = tokenData.token
     }
 
-    const link = `${appUrl}/entrar?t=${tokenData.token}`
+    const link = `${appUrl}/entrar?t=${tokenValue}`
 
     // TODO: Send via Twilio WhatsApp
     // Example using Twilio:

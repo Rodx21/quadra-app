@@ -668,7 +668,7 @@ export default function AdminPage() {
         <div className="lmo open" onClick={(e) => { if (e.target === e.currentTarget) setGeneratedLink(null) }}>
           <div className="lm an">
             <div className="lmt">Link for {generatedLink.name}</div>
-            <div className="lmf">Share via WhatsApp. Expires in 7 days.</div>
+            <div className="lmf">Permanent link — share via WhatsApp once.</div>
             <div className="lb">{generatedLink.link}</div>
             <button className="cbtn" onClick={() => { navigator.clipboard.writeText(generatedLink.link); setGeneratedLink(null) }}>Copy &amp; close</button>
             <button className="clbtn" onClick={() => setGeneratedLink(null)}>Close</button>

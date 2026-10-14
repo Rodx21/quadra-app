@@ -23,8 +23,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'tecnico_id is required' }, { status: 400 })
   }
 
+  // Reuse existing active token if one exists
+  const { data: existing } = await supabaseAdmin
+    .from('tokens_acesso')
+    .select('token')
+    .eq('tecnico_id', tecnico_id)
+    .gt('expires_at', new Date().toISOString())
+    .order('expires_at', { ascending: false })
+    .limit(1)
+    .single()
+
+  if (existing) {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+    return NextResponse.json({ link: `${appUrl}/entrar?t=${existing.token}`, token: existing.token })
+  }
+
+  // Create permanent token (10 years)
   const expiresAt = new Date()
-  expiresAt.setDate(expiresAt.getDate() + 7)
+  expiresAt.setFullYear(expiresAt.getFullYear() + 10)
 
   const { data: token, error } = await supabaseAdmin
     .from('tokens_acesso')
