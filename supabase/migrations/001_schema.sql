@@ -67,6 +67,6 @@ ALTER TABLE confirmacoes ENABLE ROW LEVEL SECURITY;
 
 -- Sample data (optional - remove for production)
 INSERT INTO tecnicos (nome, whatsapp) VALUES
-  ('Darragh', '+353871234567'),
-  ('Jen', '+353872345678'),
-  ('Rodrigo', '+353873456789');
+  ('Coach A', '+353871234567'),
+  ('Coach B', '+353872345678'),
+  ('Coach C', '+353873456789');
