@@ -348,6 +348,7 @@ body {
 .empty { text-align: center; padding: 48px 20px; color: var(--gray); font-size: 14px; }
 
 /* ── Calendar ── */
+.cal-page-content { padding: 20px 16px 48px; max-width: 1300px; margin: 0 auto; }
 .cal-wrap { overflow-x: auto; padding-bottom: 4px; }
 .cal { display: grid; grid-template-columns: repeat(7, minmax(148px, 1fr)); gap: 2px; background: #e0e3ed; border-radius: var(--r); overflow: hidden; }
 .cal-col { background: var(--off-white); display: flex; flex-direction: column; }
@@ -378,25 +379,43 @@ body {
    RESPONSIVE
    ════════════════════════════════════════════ */
 
-/* Calendar: horizontal scroll, ~2.4 days visible on mobile */
+/* Calendar: all 7 days visible on mobile */
 @media (max-width: 700px) {
-  .cal-wrap {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-    padding-bottom: 4px;
+  .cal-page-content { padding: 10px 6px 40px; }
+
+  .cal-wrap { overflow-x: hidden; padding-bottom: 0; }
+  .cal {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    min-width: 0;
   }
-  .cal { grid-template-columns: repeat(7, 40vw); gap: 6px; }
-  .cal-col { scroll-snap-align: start; }
-  .cal-dh { display: block; padding: 10px 10px 8px; text-align: center; }
-  .cal-ddate { font-size: 18px; }
-  .cal-dname { margin-bottom: 3px; }
-  .cal-dmonth { margin-top: 2px; }
-  .cal-body { padding: 6px 5px; gap: 5px; }
-  .cal-block { padding: 7px 8px 6px; }
-  .cal-btime { font-size: 10px; }
-  .cal-cname { font-size: 11px; }
-  .cal-cs { font-size: 9px; padding: 2px 4px; }
+  .cal-col { scroll-snap-align: unset; min-width: 0; overflow: hidden; }
+
+  .cal-dh { padding: 7px 2px 5px; }
+  .cal-dname { font-size: 8px; margin-bottom: 2px; letter-spacing: .03em; }
+  .cal-ddate { font-size: 15px; }
+  .cal-dmonth { display: none; }
+
+  .cal-body { padding: 4px 2px 6px; gap: 4px; }
+  .cal-block { padding: 5px 3px 4px; border-radius: 5px; overflow: hidden; }
+  .cal-btime {
+    font-size: 8px;
+    letter-spacing: 0;
+    padding-bottom: 3px;
+    margin-bottom: 3px;
+    white-space: normal;
+    line-height: 1.3;
+  }
+  .cal-coach { gap: 2px; padding: 1px 0; }
+  .cal-cname {
+    font-size: 9px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+  .cal-cs { font-size: 8px; padding: 1px 3px; flex-shrink: 0; }
+  .cal-none { padding: 10px 0; font-size: 9px; }
 }
 
 /* Admin: sidebar → top nav on mobile */

@@ -143,7 +143,7 @@ export default function CalendarPage() {
       </div>
 
       {/* ── Calendar grid ── */}
-      <div style={{ padding: '20px 16px 48px', maxWidth: 1300, margin: '0 auto' }}>
+      <div className="cal-page-content">
         {loading ? (
           <div className="empty">Loading...</div>
         ) : (
