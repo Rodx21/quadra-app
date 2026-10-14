@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Barlow, Barlow_Condensed } from "next/font/google";
 import "./globals.css";
+import { CLUB_NAME, CLUB_SHORT_NAME } from "@/lib/club";
 
 const barlow = Barlow({
   subsets: ["latin"],
@@ -15,8 +16,8 @@ const barlowCondensed = Barlow_Condensed({
 });
 
 export const metadata: Metadata = {
-  title: "Court Scheduler — St. Vincent's",
-  description: "Court slot confirmation for St. Vincent's Basketball Club",
+  title: `Court Scheduler — ${CLUB_SHORT_NAME}`,
+  description: `Court slot confirmation for ${CLUB_NAME}`,
 };
 
 export default function RootLayout({

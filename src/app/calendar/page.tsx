@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { getWeekDays, getWeekRangeShort, getMondayByOffset, formatTime, getTodayISO, isSlotExpired, isSlotLost } from '@/lib/dates'
+import { CLUB_NAME } from '@/lib/club'
 
 type Tecnico = { id: string; nome: string }
 type Horario = { id: string; tecnico_id: string; dia_semana: number; hora_inicio: string; hora_fim: string; descricao: string | null }
@@ -76,7 +77,7 @@ export default function CalendarPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
             <div className="sl-logo">SV</div>
             <div>
-              <div className="club-txt">St. Vincent&apos;s Basketball Club</div>
+              <div className="club-txt">{CLUB_NAME}</div>
               <div className="sub-txt">Court Schedule · Dublin</div>
             </div>
           </div>

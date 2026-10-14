@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 import { formatTime, getWeekRangeShort, getWeekDays, getMondayByOffset, isSlotExpired, isSlotLost, formatDeadline } from '@/lib/dates'
+import { CLUB_SHORT_NAME } from '@/lib/club'
 import type { Confirmacao, Horario, Tecnico } from '@/lib/supabase'
 
 type ConfirmacaoComHorario = Confirmacao & { horarios: Horario }
@@ -140,7 +141,7 @@ function CourtSchedulerContent() {
           <div className="cr">
             <div className="cli">SV</div>
             <div>
-              <div className="cname">St. Vincent&apos;s</div>
+              <div className="cname">{CLUB_SHORT_NAME}</div>
               <div className="csub2">Basketball Club · Dublin</div>
             </div>
           </div>

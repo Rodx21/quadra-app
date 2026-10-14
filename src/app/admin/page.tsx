@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { CLUB_NAME, CLUB_SHORT_NAME } from '@/lib/club'
 import { getDayLabel, formatTime, getWeekRangeShort, getMondayByOffset, getWeekDays, getTodayISO, isSlotExpired, isSlotLost } from '@/lib/dates'
 import type { Tecnico, Confirmacao, Horario, TokenAcesso } from '@/lib/supabase'
 
@@ -210,7 +211,7 @@ export default function AdminPage() {
         <form onSubmit={login} className="login-box an">
           <div className="login-logo">SV</div>
           <h1 className="login-title">Court Scheduler</h1>
-          <p className="login-sub">St. Vincent&apos;s Basketball Club</p>
+          <p className="login-sub">{CLUB_NAME}</p>
           <input type="password" placeholder="Admin password" value={password} onChange={(e) => setPassword(e.target.value)} className="login-input" required />
           <button type="submit" className="login-btn">Sign in</button>
         </form>
@@ -226,7 +227,7 @@ export default function AdminPage() {
         <div className="sl">
           <div className="sl-logo">SV</div>
           <div>
-            <div className="club-txt">St. Vincent&apos;s</div>
+            <div className="club-txt">{CLUB_SHORT_NAME}</div>
             <div className="sub-txt">Basketball Club · Dublin</div>
           </div>
         </div>
