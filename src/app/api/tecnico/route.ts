@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
-import { getCurrentWeekMonday, getDeadline } from '@/lib/dates'
+import { getCurrentWeekMonday, getMondayByOffset, getDeadline } from '@/lib/dates'
 
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('t')
@@ -18,7 +18,15 @@ export async function GET(req: NextRequest) {
   }
 
   const tecnico = tokenData.tecnicos as { id: string; nome: string }
-  const semana = getCurrentWeekMonday()
+  const currentWeek = getCurrentWeekMonday()
+  const maxWeek = getMondayByOffset(2)
+  const requestedSemana = req.nextUrl.searchParams.get('semana')
+  let semana = currentWeek
+  if (requestedSemana) {
+    if (requestedSemana < currentWeek) semana = currentWeek
+    else if (requestedSemana > maxWeek) return NextResponse.json({ error: 'Cannot confirm more than 2 weeks in advance' }, { status: 400 })
+    else semana = requestedSemana
+  }
   const now = new Date()
 
   // ── Coach's own slots ──

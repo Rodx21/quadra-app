@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
-import { formatTime, getWeekRangeShort, getWeekDays, isSlotExpired, isSlotLost, formatDeadline } from '@/lib/dates'
+import { formatTime, getWeekRangeShort, getWeekDays, getMondayByOffset, isSlotExpired, isSlotLost, formatDeadline } from '@/lib/dates'
 import type { Confirmacao, Horario, Tecnico } from '@/lib/supabase'
 
 type ConfirmacaoComHorario = Confirmacao & { horarios: Horario }
@@ -32,7 +32,8 @@ function CourtSchedulerContent() {
   const [coach, setCoach] = useState<Tecnico | null>(null)
   const [slots, setSlots] = useState<ConfirmacaoComHorario[]>([])
   const [vagantes, setVagantes] = useState<Horario[]>([])
-  const [week, setWeek] = useState('')
+  const [weekOffset, setWeekOffset] = useState(0)
+  const semana = getMondayByOffset(weekOffset)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState<string | null>(null)
@@ -41,7 +42,8 @@ function CourtSchedulerContent() {
 
   const load = useCallback(async () => {
     if (!token) { setError('Invalid link — missing token.'); setLoading(false); return }
-    const res = await fetch(`/api/tecnico?t=${token}`)
+    setLoading(true)
+    const res = await fetch(`/api/tecnico?t=${token}&semana=${semana}`)
     if (!res.ok) {
       const data = await res.json().catch(() => ({}))
       setError(data.error ?? 'Invalid or expired link.')
@@ -52,9 +54,8 @@ function CourtSchedulerContent() {
     setCoach(data.tecnico)
     setSlots(data.confirmacoes ?? [])
     setVagantes(data.vagantes ?? [])
-    setWeek(data.semana)
     setLoading(false)
-  }, [token])
+  }, [token, semana])
 
   useEffect(() => { load() }, [load])
 
@@ -101,15 +102,13 @@ function CourtSchedulerContent() {
     respond(modal.id, modal.type, note)
   }
 
-  const byDay = week
-    ? getWeekDays(week).map(day => ({
-        ...day,
-        pending: slots.filter(s => s.horarios.dia_semana === day.diaSemana && s.status === 'pendente')
-          .sort((a, b) => a.horarios.hora_inicio.localeCompare(b.horarios.hora_inicio)),
-        responded: slots.filter(s => s.horarios.dia_semana === day.diaSemana && s.status !== 'pendente')
-          .sort((a, b) => a.horarios.hora_inicio.localeCompare(b.horarios.hora_inicio)),
-      })).filter(d => d.pending.length + d.responded.length > 0)
-    : []
+  const byDay = getWeekDays(semana).map(day => ({
+    ...day,
+    pending: slots.filter(s => s.horarios.dia_semana === day.diaSemana && s.status === 'pendente')
+      .sort((a, b) => a.horarios.hora_inicio.localeCompare(b.horarios.hora_inicio)),
+    responded: slots.filter(s => s.horarios.dia_semana === day.diaSemana && s.status !== 'pendente')
+      .sort((a, b) => a.horarios.hora_inicio.localeCompare(b.horarios.hora_inicio)),
+  })).filter(d => d.pending.length + d.responded.length > 0)
 
   if (loading) {
     return (
@@ -148,8 +147,23 @@ function CourtSchedulerContent() {
           <div className="gr">
             Hey, <span>{coach?.nome}!</span>
           </div>
-          <div className="gs">
-            Week of {week ? getWeekRangeShort(week) : ''} &middot; {slots.length} slot{slots.length !== 1 ? 's' : ''}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 10 }}>
+            <button
+              onClick={() => setWeekOffset(o => Math.max(0, o - 1))}
+              disabled={weekOffset === 0}
+              style={{ width: 32, height: 32, background: 'rgba(255,255,255,.12)', border: 'none', borderRadius: 8, color: 'white', fontSize: 20, cursor: weekOffset === 0 ? 'default' : 'pointer', opacity: weekOffset === 0 ? 0.3 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+            >&#8249;</button>
+            <div className="gs" style={{ flex: 1, textAlign: 'center' }}>
+              {getWeekRangeShort(semana)} &middot; {slots.length} slot{slots.length !== 1 ? 's' : ''}
+              {weekOffset > 0 && <div style={{ fontSize: 10, opacity: .6, marginTop: 2 }}>
+                {weekOffset === 1 ? 'Next week' : 'In 2 weeks'}
+              </div>}
+            </div>
+            <button
+              onClick={() => setWeekOffset(o => Math.min(2, o + 1))}
+              disabled={weekOffset === 2}
+              style={{ width: 32, height: 32, background: 'rgba(255,255,255,.12)', border: 'none', borderRadius: 8, color: 'white', fontSize: 20, cursor: weekOffset === 2 ? 'default' : 'pointer', opacity: weekOffset === 2 ? 0.3 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+            >&#8250;</button>
           </div>
         </div>
       </div>
@@ -162,8 +176,8 @@ function CourtSchedulerContent() {
             <div className="slbl2">{day.label} · {day.dayNum} {day.monthShort}</div>
 
             {day.pending.map((c, i) => {
-              const expired = isSlotExpired(week, c.horarios.dia_semana, c.horarios.hora_inicio)
-              const deadline = formatDeadline(week, c.horarios.dia_semana, c.horarios.hora_inicio)
+              const expired = isSlotExpired(semana, c.horarios.dia_semana, c.horarios.hora_inicio)
+              const deadline = formatDeadline(semana, c.horarios.dia_semana, c.horarios.hora_inicio)
               return (
                 <div key={c.id} className={`${cardClass(c.status)} an a${Math.min(i + 1, 6) as 1|2|3|4|5|6}`}
                   style={expired ? { borderColor: 'var(--red-border)', opacity: .75 } : undefined}>
@@ -236,7 +250,7 @@ function CourtSchedulerContent() {
             {vagantes
               .sort((a, b) => a.dia_semana !== b.dia_semana ? a.dia_semana - b.dia_semana : a.hora_inicio.localeCompare(b.hora_inicio))
               .map(h => {
-                const lost = week ? isSlotLost(week, h.dia_semana, h.hora_inicio) : false
+                const lost = isSlotLost(semana, h.dia_semana, h.hora_inicio)
                 return (
                   <div key={h.id} className="smini" style={lost
                     ? { borderColor: 'var(--red-border)', background: 'var(--red-bg)' }
